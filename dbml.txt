@@ -3,10 +3,11 @@
 
 // This is the sample of the Syntax of this site for a quick review.
 
-Table customers {
+Table users {
   UUID uuid [primary key]
   firstname varchar
   lastname varchar
+  password varchar
   home_address varchar 
   national_code integer
   birth_date datetime
@@ -14,7 +15,8 @@ Table customers {
   postal_code integer
   phone_number integer
   education varchar
-  
+  is_active bool
+  last_login datetime
 }
 
 Table accounts {
@@ -51,14 +53,14 @@ Table transactions {
 
 Table employees {
   UUID uuid [primary key]
-  firstname varchar
-  lastname varchar
-  national_code integer
   employee_code integer
-  employee id [ref: - employees.UUID]
+  salary_mount decimal
+  hire_date datetime
+  designation varchar
+  user_id uuid  [ref: - users.UUID]
 }
 
-Ref: accounts.customer_id > customers.UUID // one-to-many
+Ref: accounts.customer_id > users.UUID // one-to-many
 Ref: transactions.c_account_id > current_account.account_id // one-to-many
 Ref: transactions.l_account_id > loan_account.account_id // one-to-many
 
