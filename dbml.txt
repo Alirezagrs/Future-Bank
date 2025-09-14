@@ -1,0 +1,64 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+// This is the sample of the Syntax of this site for a quick review.
+
+Table customers {
+  UUID uuid [primary key]
+  firstname varchar
+  lastname varchar
+  home_address varchar 
+  national_code integer
+  birth_date datetime
+  register_date datetime
+  postal_code integer
+  phone_number integer
+  education varchar
+  
+}
+
+Table accounts {
+  UUID uuid [primary key]
+  count integer
+  total_amount decimal
+  customer_id uuid
+}
+
+Table current_account {
+  account_id uuid [primary key, ref: - accounts.UUID] // one-to-one
+  account_number integer
+  status varchar
+  created_at datetime
+  balance decimal
+}
+
+Table loan_account {
+  account_id uuid [primary key, ref: - accounts.UUID] // one-to-one
+  account_number integer
+  status varchar
+  created_at datetime
+  balance decimal
+}
+
+Table transactions {
+  UUID uuid [primary key]
+  transaction_amount decimal
+  left_amount decimal
+  date datetime
+  l_account_id uuid
+  c_account_id uuid
+}
+
+Table employees {
+  UUID uuid [primary key]
+  firstname varchar
+  lastname varchar
+  national_code integer
+  employee_code integer
+  employee id [ref: - employees.UUID]
+}
+
+Ref: accounts.customer_id > customers.UUID // one-to-many
+Ref: transactions.c_account_id > current_account.account_id // one-to-many
+Ref: transactions.l_account_id > loan_account.account_id // one-to-many
+
