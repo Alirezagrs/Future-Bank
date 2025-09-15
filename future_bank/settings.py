@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     # third part
     "rest_framework",
     # local
-    "customers.apps.CustomersConfig",
-    "employees.apps.EmployeesConfig"
+    "user.apps.UserConfig"
+    
 ]
 
 MIDDLEWARE = [

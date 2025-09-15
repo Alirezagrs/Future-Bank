@@ -7,6 +7,7 @@
 
 # ruff and pylance extensions
 ### help you to develope better
+### shift + alt + f ==> clean the code but before that enable from vscode settings ==> default formatter and format on save.
 <br>
 
 # Django 
@@ -66,4 +67,4 @@
     2-Users.object.using(db_name).create_user(...)
 ### in 1 we use default db by using=self.db but in 2 we detect a special db.
 
-### *** you can use many times from AbstractBaseUser just one time and for my project that I have 2 kinds of user (normal users- employees) I should use relations and have one User model
+### *** you can not use many times from AbstractBaseUser just one time and for my project that I have 2 kinds of user (normal users- employees) I should use relations and have one User model
