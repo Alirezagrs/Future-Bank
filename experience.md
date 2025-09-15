@@ -42,15 +42,23 @@
 # AbstractBaseUser
 ### every programs need 3 definite fileds ==> password , last_login , is_active because of that django has implemented into it and ERD should be affected by this model and also is_admin for admin panel ==> change ERD!!!
 
-### USERNAME_FEILD => the field for authentication and must be unique.
+### id field => django will put the type of it to serial (bigintfield) so i want to change it to uuid so i can overwrite it.
+
+### for national_code or phone_number you can not use int field because it may occure 0 at the debut. => use charfield => change ERD.
+
+### USERNAME_FEILD => the field for authentication and must be unique. this is the field when you go to admin pannel and you should fill this field and pssword to be authorized.
 
 ### REQUIRED_FEILDS => fields when usin createsuperuser command.
+
+### *** when you use createsuperuser command => first you will be asked about username_field then required_fields 
 
 ### def has_perm(self, perm, obj=None): return True ==> this field is for permisions but we implement them other place just write it for oop rules.
 
 ### def has_module_perms(self, app_label): return True ==> if users access models or not
 
 ### def is_staff(self): return self.is_admin ==> if a user can access admin pannel.
+
+### AUTH_USER_MODEL => to show django this is our custom model cause it know nothing about it => put into settings.
 
 ### BaseUserManager => this is a subcalss of models.Manager and has been designed for user model jobs. in this situation we must cahnge objects to know how to save our fields for users:
     #save correct email format  
@@ -68,3 +76,15 @@
 ### in 1 we use default db by using=self.db but in 2 we detect a special db.
 
 ### *** you can not use many times from AbstractBaseUser just one time and for my project that I have 2 kinds of user (normal users- employees) I should use relations and have one User model
+<br>
+
+# AdminPannel
+### cause we overwrite User model and this is our custom model we must write all of the custom admin ourselves and unregister the user model was in admin pannel because the last user(for django) in admin does not work.
+
+### for creating and edditing user in admin pannel we need 2 forms to show ==> CreateUserForm - ModifyUserForm
+
+### ValidationError => the error we use in forms for example in clean()
+
+### ReadOnlyPasswordHashField => when you to modify forms in admin the user must not see passwords of others, it must be show in a hashed form and readonly.
+
+### def save() ==> if you want to overwrite it, be carful cause it has 2 kinds of overwrite one in ModelForm in forms and one in Model in models and usage of them is diffrent.

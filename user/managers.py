@@ -27,11 +27,11 @@ class UserManager(BaseUserManager):
                          bitrh_date, home_address, postal_code,
                          register_date, phone_number, eduacation, password
                          ):
-        
+
         user = self.create_user(first_name, last_name, national_code,
-                         bitrh_date, home_address, postal_code,
-                         register_date, phone_number, eduacation, password
-                         )
+                                bitrh_date, home_address, postal_code,
+                                register_date, phone_number, eduacation, password
+                                )
         user.is_admin = True
         user.save(using=self._db)
         return user
