@@ -48,9 +48,13 @@
 
 ### USERNAME_FEILD => the field for authentication and must be unique. this is the field when you go to admin pannel and you should fill this field and pssword to be authorized.
 
-### REQUIRED_FEILDS => fields when usin createsuperuser command.
+### REQUIRED_FEILDS => fields when usin createsuperuser command. BE CARFUL !!!! => this will call the  def create_superuser() in our manager sothese fields you determine into it , are exactly handled over there in manager so the fields must be the same unless error.
 
-### *** when you use createsuperuser command => first you will be asked about username_field then required_fields 
+### *** when you use createsuperuser command => first you will be asked about USERNAME_FIELD then REQUIRED_FIELDS because of that you cannot have the same value into them:
+     USERNAME_FIELD = "national_code"
+     REQUIRED_FIELDS = ["national_code", "phone_number"]
+     
+     # we will get error cause national_code will repeat 2 times in createsuperuser.
 
 ### def has_perm(self, perm, obj=None): return True ==> this field is for permisions but we implement them other place just write it for oop rules.
 
@@ -88,3 +92,12 @@
 ### ReadOnlyPasswordHashField => when you to modify forms in admin the user must not see passwords of others, it must be show in a hashed form and readonly.
 
 ### def save() ==> if you want to overwrite it, be carful cause it has 2 kinds of overwrite one in ModelForm in forms and one in Model in models and usage of them is diffrent.
+
+### *** Watch out for fieldsets => one fieldset or one add_fieldset can not have same fields:
+    fieldsets = (
+        (None, {"fields": ("first_name", "last_name", "is_active")})
+
+        ("Permissions", {"fields": ("is_active", "is_admin", "last_login")}),
+    )
+
+    # here we have error cause 2 times "is_active" is written in 2 fields.

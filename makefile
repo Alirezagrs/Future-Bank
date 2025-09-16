@@ -22,3 +22,8 @@ makemigrations:
 .PHONY: migrate
 migrate:
 	uv run python manage.py migrate
+
+
+.PHONY: createsuperuser
+createsuperuser:
+	uv run python manage.py createsuperuser

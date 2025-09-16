@@ -14,7 +14,6 @@ class CreateUserForm(forms.ModelForm):
     class Meta:
         model = Users
         fields = "__all__"
-
     def clean(self):
         pass1 = self.cleaned_data['password1']
         pass2 = self.cleaned_data['password2']

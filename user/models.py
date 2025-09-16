@@ -13,17 +13,17 @@ class Users(AbstractBaseUser):
     last_name = models.CharField(max_length=30)
     # if it was int field, 0 at first will be deleted
     national_code = models.CharField(max_length=11, unique=True, db_index=True)
-    bitrh_date = models.DateTimeField()
+    birth_date = models.DateTimeField()
     home_address = models.CharField(max_length=200)
-    postal_code = models.CharField(max_length=10, unique=True)
+    postal_code = models.CharField(max_length=10, unique=True, db_index=True)
     register_date = models.DateTimeField()
     phone_number = models.CharField(max_length=10, unique=True)
     education = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    USERNAME_FEILD = "national_code"
-    REQUIRED_FIELDS = ["national_code", "phone_number"]
     objects = UserManager()
+    USERNAME_FIELD = "national_code"
+    REQUIRED_FIELDS = ["first_name", "last_name", "birth_date", "home_address", "postal_code", "register_date", "phone_number", "education"]
 
     def __str__(self):
         return (self.first_name + '\t' + self.last_name + ': ' +
