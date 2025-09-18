@@ -7,7 +7,7 @@ from user.models import Users
 
 class Employees(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    employee_code = models.PositiveIntegerField()
+    employee_code = models.PositiveIntegerField(unique=True, db_index=True)
     salary_mount = models.DecimalField(max_digits=8, decimal_places=0) # toman
     hire_date = models.DateTimeField()
     designation = models.CharField(max_length=20)

@@ -18,7 +18,8 @@ class UserManager(BaseUserManager):
                           home_address=home_address, postal_code=postal_code,
                           register_date=register_date,
                           phone_number=phone_number, education=education)
-
+       
+        # filiing password field with hash
         user.set_password(password)
         user.save(using=self._db)
         return user

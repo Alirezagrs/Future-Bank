@@ -106,3 +106,32 @@
 <br>
 
 ### admin.py ==> to show our fields which were created in forms.py we must inherit UserAdmin then with form(if we got one form in forms.py) and fieldsets show our inputs. if we got several forms like mine (ModifyUserForm, CreateUserForm) we can add them into add_form and add_fieldsets.
+<br>
+
+# DRF
+### app_name and namescpace => use them in order not to make confused django for detecting urls(path) if you had apps that their names were same actually you isolate every path with it's name:
+    app_name="manage_bank"
+    path("registration/", UserRegisterView.as_view(), name="register")
+### now if i have this path with this name in another app there is no prob cause I isolated it with app_name
+<br>
+
+### models.DecimalField(max_digits=8, decimal_places=0) => you must determine this 2 args for this field
+    decimal_places=0 تعداد رقم اعشار
+<br>
+
+### serializers ==> it is as same as forms.py (some how) ==> when a user wants to send data(post method) you should validate data with serializers (same in the forms):
+    # like def clean()
+    def validate(self, data):
+        ...
+    
+    # like def save()
+    def create(self, validated_data):
+        ...
+    
+    # like django.core.exceptions.ValidationError
+    serializers.ValidationError("...")
+### very very important point ===>> in serializers i put password instead of password1 why? becasue if i put password1 i got 3 password fields => password1, password2, password(for user model) so i put password that exists just one but in forms.py it is different
+
+### write_only=True ===>this is for the fields which you can only write into them in postman - swager ... but in the result(Response) are not visible. like password field that for the security will not be appeared in Response and it is used with POST-PUT-PATCH
+
+### read_only=True ===> upside down of the write_only. it says that with this arg the field is ignored and you can not put value to this like datetimefield which has auto_now_add or id filed which is auto_increament.

@@ -17,7 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
         return serializers.ValidationError("passwords not match!")
     
     def create(self, validated_data):
+        # no need to save field password2 in db
         validated_data.pop("password2")
         user = Users.objects.create_user(**validated_data)
         return user
+
+
         
