@@ -9,7 +9,7 @@ from .managers import UserManager
 class Users(AbstractBaseUser):
     #  max_length is ignored by integer field use validators
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    first_name = models.CharField(max_length=30)
+    first_name = models.CharField(max_length=30, verbose_name="نام")
     last_name = models.CharField(max_length=30)
     # if it was int field, 0 at first will be deleted
     national_code = models.CharField(max_length=11, unique=True, db_index=True)
@@ -23,7 +23,9 @@ class Users(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     objects = UserManager()
     USERNAME_FIELD = "national_code"
-    REQUIRED_FIELDS = ["first_name", "last_name", "birth_date", "home_address", "postal_code", "register_date", "phone_number", "education"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "birth_date", "home_address",
+                       "postal_code", "register_date", "phone_number", "education"]
+
 
     def __str__(self):
         return (self.first_name + '\t' + self.last_name + ': ' +

@@ -15,7 +15,8 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ("national_code", "postal_code")
     fieldsets = (
         (None, {"fields": ("first_name", "last_name", "national_code",
-                           "phone_number", "education", "home_address")}),
+                           "phone_number", "education", "home_address",
+                           "password")}),
 
         ("Permissions", {"fields": ("is_active", "is_admin", "last_login")}),
     )
@@ -24,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {"fields": ("first_name", "last_name", "birth_date",
                            "national_code", "is_active", "home_address",
                            "postal_code", "register_date", "phone_number",
-                           "education", "pass1", "pass2")})
+                           "education", "password1", "password2")}),
     )
 
     ordering = ("national_code",)

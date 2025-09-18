@@ -82,14 +82,14 @@
 ### *** you can not use many times from AbstractBaseUser just one time and for my project that I have 2 kinds of user (normal users- employees) I should use relations and have one User model
 <br>
 
-# AdminPannel
+### AdminPannel
 ### cause we overwrite User model and this is our custom model we must write all of the custom admin ourselves and unregister the user model was in admin pannel because the last user(for django) in admin does not work.
 
 ### for creating and edditing user in admin pannel we need 2 forms to show ==> CreateUserForm - ModifyUserForm
 
 ### ValidationError => the error we use in forms for example in clean()
 
-### ReadOnlyPasswordHashField => when you to modify forms in admin the user must not see passwords of others, it must be show in a hashed form and readonly.
+### ReadOnlyPasswordHashField => when to modify forms in admin the user must not see passwords of others or overwriting it, it must be show in a hashed form and readonly. with help_text you can tell info about it and in ../paswword the admin can change the password => it is handeled in django by Reset Password no need to use it.
 
 ### def save() ==> if you want to overwrite it, be carful cause it has 2 kinds of overwrite one in ModelForm in forms and one in Model in models and usage of them is diffrent.
 
@@ -101,3 +101,8 @@
     )
 
     # here we have error cause 2 times "is_active" is written in 2 fields.
+
+### forms.py => for creating custom inputs to show in admin.py to create our custome user. the label in for example forms.CharField(label='رمز عبور', widget=forms.PasswordInput) is shown in admin pannel. when we want to create our user in admin pannel after clicking to create user in admin pannel => forms.py will be started and if there is any clean() or clean_field() they will be launched. very very important point ===>>> if using clean() you must compare and validate several fields and at the end you must return cleand_data because you are comparing fields. but clean_field() is absoloutly for one field and you must return that field you are validating it. very very important point ===>>> if you use clean() it validate all the fields and if there is an error it shows it at the top of the admin (total error) but in clean_field() like clean_password2() if there is an error in exactly shows bottom of the field that you know that this error is for this form password2 because of it we use any of them is better.
+<br>
+
+### admin.py ==> to show our fields which were created in forms.py we must inherit UserAdmin then with form(if we got one form in forms.py) and fieldsets show our inputs. if we got several forms like mine (ModifyUserForm, CreateUserForm) we can add them into add_form and add_fieldsets.
