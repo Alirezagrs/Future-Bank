@@ -28,6 +28,7 @@ class CreateUserForm(forms.ModelForm):
     def save(self, commit=True):
         # this is our user obj cause we used ModelForm
         user = super().save(commit=False)
+        # filiing password field with hash
         user.set_password(self.cleaned_data["password2"])
         if commit:
             user.save()

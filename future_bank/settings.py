@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     # third part
     "rest_framework",
     # local
-    "user.apps.UserConfig"
+    "user.apps.UserConfig",
+    "manage_bank.apps.ManageBankConfig"
     
 ]
 
