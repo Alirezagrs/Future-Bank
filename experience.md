@@ -12,6 +12,9 @@
 
 # Django 
 ### first of all aftar creating a project, seperate manage.py from the folder, moving it to the main route then we have 2 folders into each other (future_banek/future_bank) so remove the inner and move files of that one route before 
+
+### !!!!! makemigrations ==> sometimes does not work so you must pass app names to it to work ==>:
+    python manage.py makemigrations app1, app2, ...
 <br>
 
 # ERD
@@ -132,8 +135,41 @@
     
     # like django.core.exceptions.ValidationError
     serializers.ValidationError("...")
+### Serializer vs ModelSerialize => exactly like Form and ModelForm => at the first you should write more codes and defiene fields of models into serializers for validating but at two you connect fields of model to serializer no need to handle by hand. !!!!!!!!for each model there may be several serializers. => mine in user     
+
+
 ### very very important point ===>> in serializers i put password instead of password1 why? becasue if i put password1 i got 3 password fields => password1, password2, password(for user model) so i put password that exists just one but in forms.py it is different
 
 ### write_only=True ===>this is for the fields which you can only write into them in postman - swager ... but in the result(Response) are not visible. like password field that for the security will not be appeared in Response and it is used with POST-PUT-PATCH
 
-### read_only=True ===> upside down of the write_only. it says that with this arg the field is ignored and you can not put value to this like datetimefield which has auto_now_add or id filed which is auto_increament.
+### read_only=True ===> upside down of the write_only. it says that with this arg the field is ignored and you can not put value to this in postman and ... like datetimefield which has auto_now_add or id filed which is auto_increament.
+
+### nested serializers ==> if you had models which got relations with eachothers and you wanted to show all of them in a GET method. like mine:
+    class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employees
+        fields = "__all__"
+
+
+    class AccountsSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Accounts
+            fields = "__all__"
+
+            
+    class UserSerializer(serializers.ModelSerializer):
+        # must not use password1 because we have password  in user model
+        password = serializers.CharField(write_only=True)
+        password2 = serializers.CharField(write_only=True)
+        
+        employee = EmployeeSerializer(read_only=True)
+        account = EmployeeSerializer(read_only=True, many=True)
+
+### SerializerMethodField => it has diffrents with above. nested serializers are for showin all the value of fields in models. but in here if you want to show just one field that is customized by you from the mode you have set in model = model_name
+
+### select_related ==> always use for OneToMany or OneToOne fields => using JOIN here and bring all data from one query
+
+### prefetch_related ==> always use for ManyToMany fields and reverse Fk(حرکت از جدول اصلی به جدول فرعی) ==> it usually uses 2 queries(one for data in rel and one for data of main table) why not using join? because in here JOIN for ManyToMany will repeat the rows and not efficient for time and space.
+
+
+### !!!!!!!!!!!so important about above!!!!!!! ==> when you are going reverse like mine(going from user to employee) and if our relation OneToOne ==> always use select_related. it is a reverse fk but our rel is OneToOne ==>select_related on the other side (going from user to account) again we got reverse fk but our rel is OneToMany so use ==> prefetch_related . * for (going not reverse) use the last rule.
