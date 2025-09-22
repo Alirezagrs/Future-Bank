@@ -10,15 +10,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = "__all__"
-    
     def validate(self, data):
-        if data["password"] == data["password2"]:
-            return data
-        return serializers.ValidationError("passwords not match!")
+        if data["password"] != data["password2"]:
+            raise serializers.ValidationError("passwords not match!")
+        return data
+        
     
     def create(self, validated_data):
+        
         # no need to save field password2 in db
-        validated_data.pop("password2")
+        # if fields which filled by user coming here and are validated
+        # so i must create a user
+        del validated_data["password2"]
         user = Users.objects.create_user(**validated_data)
         return user
 

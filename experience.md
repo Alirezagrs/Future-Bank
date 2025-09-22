@@ -38,6 +38,8 @@
 
 <br>
 
+# Postman
+### be carful for using method post. I was using params in postman for sending data that it was wrong and I got error. I should have gone in tab Body then using with raw and send a json format.
 
 # AbstractBaseUser
 ### every programs need 3 definite fileds ==> password , last_login , is_active because of that django has implemented into it and ERD should be affected by this model and also is_admin for admin panel ==> change ERD!!!
