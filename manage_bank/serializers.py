@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from user.models import Users
 
-class UserSerializer(serializers.ModelSerializer):
+class UserRegisterSerializer(serializers.ModelSerializer):
     # must not use password1 because we have password  in user model
     password = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("passwords not match!")
         return data
         
-    
+
     def create(self, validated_data):
         
         # no need to save field password2 in db
@@ -26,4 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-        
+
+class UserGetInformationSerializer(serializers.Serializer):
+    pass
