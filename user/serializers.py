@@ -13,13 +13,17 @@ class AccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accounts
         fields = "__all__"
+
 # GET
 class UserGetAllDataSerializer(serializers.ModelSerializer):
-    accounts = AccountsSerializer(read_only=True)
-    accounts = EmployeeSerializer(read_only=True, many=True)
+    account = AccountsSerializer(read_only=True, many=True)
+    employee = EmployeeSerializer(read_only=True)
     class Meta:
         model = Users
         fields = "__all__"
+        extra_kwargs = {
+            "password": {"write_only": True}
+        }
         
 # POST
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -43,4 +47,3 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         del validated_data["password2"]
         user = Users.objects.create_user(**validated_data)
         return user
-

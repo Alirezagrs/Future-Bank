@@ -144,11 +144,20 @@
 
 ### read_only=True ===> upside down of the write_only. it says that with this arg the field is ignored and you can not put value to this in postman and ... like datetimefield which has auto_now_add or id filed which is auto_increament.
 
-### nested serializers ==> if you had models which got relations with eachothers and you wanted to show all of them in a GET method. like mine:
+### nested serializers ==> if you had models which got relations with eachothers and you wanted to show all of them in a GET method. like mine: !!!!!! so important!!!!! whatever you have defiend for related_name must be exactly in query in selected/orefetch_related and exactly in variables you defiend in the main serializer.
+    #views.py
+    class UserGetAllInformationView(APIView):
+        def get(self, request):
+            users = Users.objects.select_related(
+                "employee").prefetch_related('account').all()
+            user_serializer = UserGetAllDataSerializer(instance=users, many=True)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+    #serializer.py
     class EmployeeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Employees
-        fields = "__all__"
+        class Meta:
+            model = Employees
+            fields = "__all__"
 
 
     class AccountsSerializer(serializers.ModelSerializer):
@@ -157,14 +166,17 @@
             fields = "__all__"
 
             
-    class UserSerializer(serializers.ModelSerializer):
-        # must not use password1 because we have password  in user model
-        password = serializers.CharField(write_only=True)
-        password2 = serializers.CharField(write_only=True)
-        
+    class UserGetAllDataSerializer(serializers.ModelSerializer):
+        account = AccountsSerializer(read_only=True, many=True)
         employee = EmployeeSerializer(read_only=True)
-        account = EmployeeSerializer(read_only=True, many=True)
+        class Meta:
+            model = Users
+            fields = "__all__"
+            extra_kwargs = {
+                "password": {"write_only": True}
+            }
 
+    #NOTE ==> the result is not ordered by fields(account employee come after id of user but i wanted come in last). for eing orderd you must define each field urself not using "__all__".
 ### SerializerMethodField => it has diffrents with above. nested serializers are for showin all the value of fields in models. but in here if you want to show just one field that is customized by you from the mode you have set in model = model_name
 
 ### select_related ==> always use for OneToMany or OneToOne fields => using JOIN here and bring all data from one query
