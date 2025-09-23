@@ -4,6 +4,8 @@ from .views import UserRegisterView, UserGetAllInformationView, \
     UserGetInformationView, UserHardDeleteInformationView, \
     UserSoftDeleteInformationView, UserUpdateInformationView
 
+from rest_framework.authtoken import views as auth_toke
+
 app_name = "manage_user"
 
 urlpatterns = [
@@ -24,4 +26,5 @@ urlpatterns = [
 
     path("update/<uuid:pk>/",
          UserUpdateInformationView.as_view(), name="update"),
+
 ]

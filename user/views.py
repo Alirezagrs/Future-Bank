@@ -3,6 +3,9 @@ from uuid import UUID
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
 
 from user.models import Users
 from .serializers import UserRegistrationSerializer, UserGetAllDataSerializer
@@ -13,14 +16,18 @@ class UserRegisterView(APIView):
     def post(self, request):
         user = UserRegistrationSerializer(data=request.data)  # or request.POST
         if user.is_valid():
-            user.create(user.validated_data)
-            return Response("user has been registered", status.HTTP_200_OK)
+            # used self.user for ref count, not refcount=0 after running.
+            self.user=user.create(user.validated_data)
+            token, created = Token.objects.get_or_create(user=self.user)
+            return Response("user has been registered", status.HTTP_201_CREATED)
 
         return Response(user.errors, status.HTTP_400_BAD_REQUEST)
 
 
 # get all users
 class UserGetAllInformationView(APIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [IsAuthenticated,]
     def get(self, request):
         users = Users.objects.select_related(
             "employee").prefetch_related('account').filter(is_active=True).all()
@@ -28,7 +35,7 @@ class UserGetAllInformationView(APIView):
         return Response(user_serializer.data, status=status.HTTP_200_OK)
 
 
-# get specific usee
+# get specific user
 class UserGetInformationView(APIView):
     def get(self, request, pk: UUID):
         user = Users.objects.select_related(
@@ -45,7 +52,7 @@ class UserUpdateInformationView(APIView):
             user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()
-            return Response(user_serializer.data)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

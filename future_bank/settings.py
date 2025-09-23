@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # third part
     "rest_framework",
+    "rest_framework.authtoken",
     # local
     "user.apps.UserConfig",
     "manage_bank.apps.ManageBankConfig"

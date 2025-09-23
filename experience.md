@@ -42,7 +42,7 @@
 <br>
 
 # Postman
-### be carful for using method post. I was using params in postman for sending data that it was wrong and I got error. I should have gone in tab Body then using with raw and send a json format.
+### be carful for using method POST/PUT/PATCH. I was using params in postman for sending data that it was wrong and I got error. I should have gone in tab Body then using with raw and send a json format. data must be sent in body when using these methods.
 
 # AbstractBaseUser
 ### every programs need 3 definite fileds ==> password , last_login , is_active because of that django has implemented into it and ERD should be affected by this model and also is_admin for admin panel ==> change ERD!!!
@@ -144,7 +144,7 @@
 
 ### read_only=True ===> upside down of the write_only. it says that with this arg the field is ignored and you can not put value to this in postman and ... like datetimefield which has auto_now_add or id filed which is auto_increament.
 
-### nested serializers ==> if you had models which got relations with eachothers and you wanted to show all of them in a GET method. like mine: !!!!!! so important!!!!! whatever you have defiend for related_name must be exactly in query in selected/orefetch_related and exactly in variables you defiend in the main serializer.
+### nested serializers ==> if you had models which got relations with eachothers and you wanted to show all of them in a GET method. like mine: !!!!!! so important!!!!! whatever you have defiend for related_name must be exactly in query in selected/prefetch_related and exactly be in variables you defiend in the main serializer.
     #views.py
     class UserGetAllInformationView(APIView):
         def get(self, request):
@@ -185,3 +185,53 @@
 
 
 ### !!!!!!!!!!!so important about above!!!!!!! ==> when you are going reverse like mine(going from user to employee) and if our relation OneToOne ==> always use select_related. it is a reverse fk but our rel is OneToOne ==>select_related on the other side (going from user to account) again we got reverse fk but our rel is OneToMany so use ==> prefetch_related . * for (going not reverse) use the last rule.
+
+### delete an object of a model => no need to use .save() after delete method. it is safe unlike update or create an obj. also I know all about soft-delete(no need to write):
+    # hard-delete specific user
+    class UserHardDeleteInformationView(APIView):
+        def delete(self, request, pk: UUID):
+            user = get_object_or_404(Users, pk=pk)
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+### get_object_or_404(your model, condition like pk=pk) ==> a good function for finding a record in db and if not exists return 404 http error.
+
+### get_or_create(condition like pk=pk) ==> another usful methods of models.it will get the object if youtr condition is true unless create it.
+
+### update an object of a model => UserGetAllDataSerializer(user, data=request.data, partial=True) => in update (put or patch) you must get the model instance as the first arg to serializer in order to detect which object it is working to then data=request.data which comming from user then partial=True for patch update not total update.:
+    class UserUpdateInformationView(APIView):
+        def patch(self, request, pk: UUID):
+            user = get_object_or_404(Users, pk=pk)
+            user_serializer = UserGetAllDataSerializer(
+                user, data=request.data, partial=True)
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
+ # Permissions and Authentication
+ ### authentication => users can use my app but can not do anything they want. so for this we need authentication ways that one of is TokenAuthentication that it is in rest_framework it self. rach user after being registered/created must have a token. the process in this way is the user send the created token from his/her device and the token will be checked in the db of the server. if they are the same so user can do anything unless(broken token or not having a token) => 401 error unauthorized user. !!!!!! way of creating token :
+    # I prefer these ways
+    from rest_framework.permissions import IsAuthenticated
+    from rest_framework.authentication import TokenAuthentication
+    from rest_framework.authtoken.models import Tokenn
+    1-signals
+    2-token, created = Token.objects.get_or_create(user=self.user)
+
+    #####
+    class UserGetAllInformationView(APIView):
+        authentication_classes = [TokenAuthentication,]
+        permission_classes = [IsAuthenticated,]
+### authentication_classes = [TokenAuthentication,] ==> it wll telling you teh kind of authentications you are using like: JWT, TokenAuthentication, ....<br>when a http req comes to url of this class(view) it will check if a token has been sent or not if token exists: 1- finding the user of that toke (request.user) 2-prepearing othe stuffs(request.auth) ==> therefore==> this just says us who the user is and if user is a log-in user or not and token must be sent unless error.
+
+### permissions_classes => this really does the limitations for the user after detecting if she/he ha logged(authentication_classes) in or not. we built-in pemissions like IsAuthenticated means the user must be logged in or not(403 error permission denied).or we can have our custome permissions.
+
+
+
+### ############################notes############################
+
+### 1- for complex condition(mixed or and) use Q. you can just AND condition in filter or get
+
+### 2- when you say serializer.save() => validate data then create the object in the model it is connected to in model=model_name.
+
+### 3- partial=True => you ahv authority to fill fields you want unless all the fields must be filled out (PUT).
