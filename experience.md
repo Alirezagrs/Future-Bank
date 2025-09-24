@@ -222,10 +222,14 @@
     class UserGetAllInformationView(APIView):
         authentication_classes = [TokenAuthentication,]
         permission_classes = [IsAuthenticated,]
-### authentication_classes = [TokenAuthentication,] ==> it wll telling you teh kind of authentications you are using like: JWT, TokenAuthentication, ....<br>when a http req comes to url of this class(view) it will check if a token has been sent or not if token exists: 1- finding the user of that toke (request.user) 2-prepearing othe stuffs(request.auth) ==> therefore==> this just says us who the user is and if user is a log-in user or not and token must be sent unless error.
+
+### authentication_classes = [TokenAuthentication,] ==> it wll telling you teh kind of authentications you are using like: JWT, TokenAuthentication, ....<br>when a http req comes to url of this class(view) it will check if a token has been sent or not if token exists: 1- finding the user of that toke (request.user) 2-prepearing othe stuffs(request.auth). how it works? you should send the token in the header of your req and the format in postman is: key=Authorization value=Token \<token> ==> therefore==> this just says us who the user is and if user is a log-in user or not and token must be sent unless error. then ==> {
+    request.user,
+    request.is_authenticated,
+    401 error
+}
 
 ### permissions_classes => this really does the limitations for the user after detecting if she/he ha logged(authentication_classes) in or not. we built-in pemissions like IsAuthenticated means the user must be logged in or not(403 error permission denied).or we can have our custome permissions.
-
 
 
 ### ############################notes############################

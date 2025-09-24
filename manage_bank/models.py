@@ -22,16 +22,16 @@ class Accounts(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=0)
     user = models.ForeignKey(
         to=Users, on_delete=models.CASCADE, related_name="account"
-        )
-
-
+    )
+    def __str__(self):
+        return self.user.__str__()
 # حساب پس انداز
 class LoanAcoount(models.Model):
     id = models.OneToOneField(
-        primary_key=True, to=Accounts, on_delete=models.CASCADE
-        )
+        primary_key=True, to=Accounts, on_delete=models.CASCADE, related_name="loan"
+    )
     acount_number = models.PositiveIntegerField()
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default="active")
     created_at = models.DateTimeField(auto_now_add=True)
     balance = models.DecimalField(max_digits=10, decimal_places=0)
 
@@ -39,10 +39,10 @@ class LoanAcoount(models.Model):
 # حساب جاری
 class CurrentAcount(models.Model):
     id = models.OneToOneField(
-        primary_key=True, to=Accounts, on_delete=models.CASCADE
-        )
+        primary_key=True, to=Accounts, on_delete=models.CASCADE, related_name="current"
+    )
     acount_number = models.PositiveIntegerField()
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default="active")
     created_at = models.DateTimeField(auto_now_add=True)
     balance = models.DecimalField(max_digits=8, decimal_places=0)
 
@@ -51,10 +51,13 @@ class Transactions(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     transaction_amount = models.PositiveIntegerField()
     left_amount = models.PositiveIntegerField()
-    transactions_date = models.DateTimeField()
+    transactions_date = models.DateTimeField(auto_now_add=True)
+    from_card = models.PositiveIntegerField()
+    to_card = models.PositiveIntegerField()
     transaction_number = models.CharField(
         default=uuid4, unique=True, db_index=True)
-    l_account_id = models.ForeignKey(to=LoanAcoount, on_delete=models.CASCADE)
+    l_account_id = models.ForeignKey(
+        to=LoanAcoount, on_delete=models.CASCADE, related_name="l_transaction")
     c_account_id = models.ForeignKey(
-        to=CurrentAcount, on_delete=models.CASCADE
+        to=CurrentAcount, on_delete=models.CASCADE, related_name="c_transaction"
     )
