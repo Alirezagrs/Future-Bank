@@ -309,7 +309,7 @@
             ).all()
     
         یا
-
+     with transaction.atomic():
         accounts = user.account.select_for_update().select_related(
                     'loan', 'current'
                 ).prefetch_related(

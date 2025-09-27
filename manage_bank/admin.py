@@ -12,24 +12,29 @@ class EmployeesAdmin(admin.ModelAdmin):
 
 
 class AccountsAdmin(admin.ModelAdmin):
-    list_display = ("count", "total_amount")
+    list_display = ("count", "show_total_amount")
 
-
+    def show_total_amount(self, obj):
+        return obj.calculated_total
+    show_total_amount.short_description = "Total Balance"
+    
 class CurrentAcountAdmin(admin.ModelAdmin):
-    list_display = ("acount_number", "status", "created_at", "balance",)
-    search_fields = ("acount_number",)
+    list_display = ("account_number", "status", "created_at", "balance",)
+    search_fields = ("account_number",)
     list_filter = ("status", "created_at",)
 
 
 class LoanAcoountAdmin(admin.ModelAdmin):
-    list_display = ("acount_number", "status", "created_at", "balance",)
-    search_fields = ("acount_number",)
+    list_display = ("account_number", "status", "created_at", "balance",)
+    search_fields = ("account_number",)
     list_filter = ("status", "created_at",)
 
 
 class TransactionsAdmin(admin.ModelAdmin):
     list_display = ("transaction_amount", "left_amount",
-                    "transactions_date", "transaction_number",)
+                    "transactions_date", "transaction_number",
+                    "from_card", "to_card"
+                    )
     list_filter = ("transaction_number",)
 
 

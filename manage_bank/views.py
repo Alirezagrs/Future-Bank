@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -17,12 +18,9 @@ class TransactionView(APIView):
         amount = request.get("amount")
         from_card = request.get("from_card")
         to_card = request.get("to_card")
-        # user_with_l_account = Users.objects.prefetch_related('account').select_related("loan").prefetch_related("l_transaction").get(pk=pk)
-        # user_with_c_account = Users.objects.prefetch_related('account').select_related("current").prefetch_related("c_transaction").get(pk=pk)
-        user = Users.objects.prefetch_related(
-            'account__loan__l_transaction',
-            'account__current__c_transaction'
-        ).get(pk=pk)
+
+        user = get_object_or_404(Users, pk=pk)
+        
         with transaction.atomic():
             for acc in user.account.all():
                 # loan
