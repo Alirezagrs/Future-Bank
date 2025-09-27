@@ -11,7 +11,12 @@ class TransactionView(APIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [IsAuthenticated, ]
 
-    def post(self, request, pk, account_number, amount, from_card, to_card):
+    def post(self, request):
+        pk = request.get("pk")
+        account_number = request.get("account_number")
+        amount = request.get("amount")
+        from_card = request.get("from_card")
+        to_card = request.get("to_card")
         # user_with_l_account = Users.objects.prefetch_related('account').select_related("loan").prefetch_related("l_transaction").get(pk=pk)
         # user_with_c_account = Users.objects.prefetch_related('account').select_related("current").prefetch_related("c_transaction").get(pk=pk)
         user = Users.objects.prefetch_related(

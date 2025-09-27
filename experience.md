@@ -231,6 +231,95 @@
 
 ### permissions_classes => this really does the limitations for the user after detecting if she/he ha logged(authentication_classes) in or not. we built-in pemissions like IsAuthenticated means the user must be logged in or not(403 error permission denied).or we can have our custome permissions.
 
+### custom permissions => for register a user , only employees can do that(like real banks) so i needed custom permissions:
+
+    from rest_framework.permissions import BasePermission
+
+    class UserIsEmployeePermission(BasePermission):
+        def has_permission(self, request, view):
+            user = request.user
+            return user.is_authenticated and hasattr(user, 'employee')
+            # 'employee' is what we defiend in related_name
+
+
+# Transaction
+### if a user wants to transactions many important things must be detected.<br>when you send data by method POST/PUT/DELETE/PATCH because they send data in their body you can not get 'em in url anymore and access them by funcion args so:
+    def post(self, request):
+        pk = request.get("pk")
+        account_number = request.get("account_number")
+        amount = request.get("amount")
+        from_card = request.get("from_card")
+        to_card = request.get("to_card")
+
+### transaction.atomic() ==> we need this for a transaction because the operation of moving money must be completed(کم کردن از حساب طرف - انتقال به حساب طرف - اضافه شدن موجودی طرف و ....). 
+
+### select_for_update() ==> think a situation that 3 persons want to send money to your account. here we have race condition and shared resource. we must lock field of our account that each transaction done after another gets commencing.وقتی چند کاربر همزمان به یک ردیف دیتابیس دسترسی دارند و می‌خواهند آن را تغییر بدهند، ممکن است race condition پیش بیاید.select_for_update() باعث می‌شود که آن ردیف در طول تراکنش قفل شود و دیگران نتوانند تا پایان تراکنش آن را تغییر دهند.
+
+### how to reach to transaction table in my model?
+    User → Accounts → LoanAccount / CurrentAccount → Transactions
+
+    # ❌first I used below that it was wrong ❌
+    user_with_l_account = Users.objects.prefetch_related('account').select_related("loan").prefetch_related("l_transaction").get(pk=pk)
+
+    user_with_c_account = Users.objects.prefetch_related('account').select_related("current").prefetch_related("c_transaction").get(pk=pk)
+
+
+    # this is True way✅✅✅
+    # you can not reach loan/current details
+    user = Users.objects.prefetch_related(
+            'account__loan__l_transaction', #مسیریابی
+            'account__current__c_transaction'
+        ).get(pk=pk)
+    
+    
+    # modern way of getting each account with loan/current details✅✅
+    from django.db.models import Prefetch
+
+    accounts_qs = Accounts.objects.select_related('loan', 'current').prefetch_related(
+        'loan__l_transaction', 'current__c_transaction'
+    )
+
+    user = Users.objects.prefetch_related(
+        Prefetch('account', queryset=accounts_qs)
+    ).get(pk=pk)
+
+    یا
+
+    accounts_qs = Accounts.objects.select_related('loan','current') \
+    .prefetch_related('loan__l_transaction','current__c_transaction')
+    user = Users.objects.prefetch_related(Prefetch('account', accounts_qs)).get(pk=pk)
+
+
+### the above was not safe for race condition ==> here is the optimized/safe query:
+    from django.db.models import Prefetch
+    from django.shortcuts import get_object_or_404
+
+    user = get_object_or_404(Users, pk=pk)
+
+    accounts_qs = Accounts.objects.select_related(
+            'loan', 'current'
+        ).prefetch_related(
+            'loan__l_transaction',
+            'current__c_transaction'
+        )
+    
+    with transaction.atomic():
+        accounts = user.account.select_for_update().prefetch_related(
+                Prefetch('account', queryset=accounts_qs)
+            ).all()
+    
+        یا
+
+        accounts = user.account.select_for_update().select_related(
+                    'loan', 'current'
+                ).prefetch_related(
+                    'loan__l_transaction',
+                    'current__c_transaction'
+                ).all()
+
+
+ ### description of above ==> first you much reach to aacount model(from user to account this is a reverse fk and ontomany => prefetch_related) then you can reach sub model by above exp(this is a total exp). but in wrong exp i wanted to reach transaction by user(transaction is for account and not for user)
+
 
 ### ############################notes############################
 
@@ -239,3 +328,10 @@
 ### 2- when you say serializer.save() => validate data then create the object in the model it is connected to in model=model_name.
 
 ### 3- partial=True => you ahv authority to fill fields you want unless all the fields must be filled out (PUT).
+
+### 4- you can even use field lookup for your relations:
+    class Employee(models.Model):
+        user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
+    
+    users = Users.objects.filter(employee__isnull=False)
+
