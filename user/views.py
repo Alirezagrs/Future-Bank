@@ -53,7 +53,8 @@ class UserGetInformationView(APIView):
 class UserUpdateInformationView(APIView):
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticated,]
-    def patch(self, request, pk: UUID):
+    def patch(self, request):
+        pk = request.data.get("pk")
         user = get_object_or_404(Users, pk=pk)
         user_serializer = UserGetAllDataSerializer(
             user, data=request.data, partial=True)
@@ -67,7 +68,8 @@ class UserUpdateInformationView(APIView):
 class UserHardDeleteInformationView(APIView):
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticated, UserIsEmployeePermission]
-    def delete(self, request, pk: UUID):
+    def delete(self, request):
+        pk = request.data.get("pk")
         user = get_object_or_404(Users, pk=pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -77,7 +79,8 @@ class UserHardDeleteInformationView(APIView):
 class UserSoftDeleteInformationView(APIView):
     authentication_classes = [TokenAuthentication,]
     permission_classes = [IsAuthenticated, UserIsEmployeePermission]
-    def delete(self, request, pk: UUID):
+    def delete(self, request):
+        pk = request.data.get("pk")
         user = get_object_or_404(Users, pk=pk)
         user.is_active = False
         user.save()

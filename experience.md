@@ -245,11 +245,11 @@
 # Transaction
 ### if a user wants to transactions many important things must be detected.<br>when you send data by method POST/PUT/DELETE/PATCH because they send data in their body you can not get 'em in url anymore and access them by funcion args so:
     def post(self, request):
-        pk = request.get("pk")
-        account_number = request.get("account_number")
-        amount = request.get("amount")
-        from_card = request.get("from_card")
-        to_card = request.get("to_card")
+        pk = request.data.get("pk")
+        account_number = request.data.get("account_number")
+        amount = int(request.data.get("amount"))
+        from_card = request.data.get("from_card")
+        to_card = request.data.get("to_card"))
 
 ### transaction.atomic() ==> we need this for a transaction because the operation of moving money must be completed(کم کردن از حساب طرف - انتقال به حساب طرف - اضافه شدن موجودی طرف و ....). 
 
